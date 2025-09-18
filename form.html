@@ -9,13 +9,16 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-image: url("assets/images/bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
         }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="container mx-auto p-4">
         <div id="formView">
-            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+            <div class="max-w-md mx-auto bg-white/30 backdrop-blur-sm p-8 rounded-lg shadow-lg">
                 <h1 class="text-2xl font-bold text-gray-800 text-center">Attendance Record</h1>
                 <p class="text-center text-gray-600 mb-6">You are recording: 
                     <span id="statusTitle" class="font-bold"></span>
@@ -121,9 +124,9 @@
                     }
                 });
             } else {
-                formView.innerHTML = `<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg text-center">
+                formView.innerHTML = `<div class="max-w-md mx-auto bg-white/30 backdrop-blur-sm p-8 rounded-lg shadow-lg text-center">
                                          <h1 class="text-xl font-bold text-red-600">Invalid Link</h1>
-                                         <p class="text-gray-600 mt-2">Please scan a valid QR code from the attendance kiosk.</p>
+                                         <p class="text-gray-900 mt-2">Please scan a valid QR code from the attendance kiosk.</p>
                                       </div>`;
             }
 
