@@ -26,8 +26,8 @@
                 
                 <form id="attendanceForm" class="space-y-4">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                        <input type="text" id="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., Juan Dela Cruz">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Student Full Name</label>
+                        <input type="text" id="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., First Dela Cruz">
                     </div>
                     <div>
                         <label for="course" class="block text-sm font-medium text-gray-700">Course</label>
@@ -69,7 +69,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const makeWebhookUrl = "https://hook.eu2.make.com/h46vzvyqeoi9hnhosiplbu16pqoq2jd7";
+            const makeWebhookUrl = "https://hook.us2.make.com/0aoir46cn9f1u8gtt9viv0g2u6xfzhii";
 
             const urlParams = new URLSearchParams(window.location.search);
             const status = urlParams.get('status');
