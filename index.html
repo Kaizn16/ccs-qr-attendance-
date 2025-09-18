@@ -28,7 +28,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
     <div class="container mx-auto p-4 max-w-4xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
             <!-- Left Column: Generator -->
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h1 class="text-2xl font-bold mb-2 text-gray-800 text-center">QR Attendance Generator</h1>
@@ -43,51 +43,12 @@
                     </button>
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-32">
                     <div id="qrcode" class="w-full h-auto bg-gray-50">
                          <span id="qr-placeholder" class="text-gray-400">QR Code will appear here</span>
                     </div>
                 </div>
                  <div id="kioskMessage" class="mt-4 text-center text-sm font-medium"></div>
-            </div>
-
-            <!-- Right Column: Instructions -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">How to Connect to Google Sheets</h2>
-                <div class="prose prose-sm max-w-none text-gray-600">
-                    <p>Follow these steps to automatically log attendance into your Google Sheet using <a href="https://www.make.com" target="_blank" class="text-indigo-600 font-semibold">Make.com</a>.</p>
-                    <ol class="list-decimal list-inside space-y-3">
-                         <li>
-                            <strong>Webhook URL:</strong> Open the `form.html` file in a text editor. Find the `makeWebhookUrl` variable in the script section and replace the placeholder URL.
-                        </li>
-                        <li>
-                            <strong>Make.com Scenario:</strong>
-                            <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
-                                <li>Create a new scenario with a <strong>Webhooks</strong> > "Custom webhook" trigger.</li>
-                                <li>Add, name, and save the webhook. Copy the URL and paste it into the `form.html` file.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            <strong>Google Sheets Module:</strong>
-                            <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
-                                <li>Add a <strong>Google Sheets</strong> > "Add a Row" module.</li>
-                                <li>Connect your account and select your attendance Spreadsheet and Sheet.</li>
-                                <li>Your sheet needs columns like: `Name`, `Course`, `Year Level`, `Section`, `Status`, `Timestamp`.</li>
-                            </ul>
-                        </li>
-                         <li>
-                            <strong>Test & Map Data:</strong>
-                             <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
-                                <li>Click "Run once" in Make.</li>
-                                <li>Generate a QR code on this page, scan it, and submit the form on the new page with sample data.</li>
-                                <li>Map the incoming data (e.g., `1.name`, `1.course`) to your sheet columns in the Google Sheets module.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            <strong>Activate:</strong> Turn on your Make.com scenario. You're all set!
-                        </li>
-                    </ol>
-                </div>
             </div>
         </div>
     </div>
@@ -102,7 +63,6 @@
             let qrcode = null;
 
             const generateQR = (status) => {
-                // Get the base path of the current URL
                 const path = window.location.pathname;
                 const basePath = path.substring(0, path.lastIndexOf('/'));
                 const formUrl = `${window.location.protocol}//${window.location.host}${basePath}/form.html?status=${encodeURIComponent(status)}`;
