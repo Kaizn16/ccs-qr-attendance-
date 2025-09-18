@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url("https://placehold.co/1920x1080/e2e8f0/e2e8f0?text=.");
+            background-image: url("https://placehold.co/1920x1_1080/e2e8f0/e2e8f0?text=.");
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -69,8 +69,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const makeWebhookUrl = "https://hook.us2.make.com/0aoir46cn9f1u8gtt9viv0g2u6xfzhii";
+            
+            const makeWebhookUrl = "https://hook.eu2.make.com/h46vzvyqeoi9hnhosiplbu16pqoq2jd7"; 
+            const backupMakeWebhookUrl = "https://hook.us2.make.com/0aoir46cn9f1u8gtt9viv0g2u6xfzhii";
 
+            
             const urlParams = new URLSearchParams(window.location.search);
             const status = urlParams.get('status');
             const formView = document.getElementById('formView');
@@ -89,6 +92,15 @@
                 }
                 return null;
             };
+            
+            const handleSuccessfulSubmission = (formData) => {
+                const studentKey = getStudentKey();
+                const newRecord = { status: status, timestamp: new Date().toISOString() };
+                localStorage.setItem(studentKey, JSON.stringify(newRecord));
+                
+                form.classList.add('hidden');
+                showMessage(`Thank you, ${formData.name}. Your ${status} has been recorded successfully.`, 'success');
+            };
 
             if (status && (status === 'Time In' || status === 'Time Out')) {
                 statusTitle.textContent = status;
@@ -106,16 +118,12 @@
                     const lastRecord = JSON.parse(localStorage.getItem(studentKey));
                     const lastStatus = lastRecord ? lastRecord.status : null;
 
-                    if (status === 'Time In') {
-                        if (lastStatus === 'Time In') {
-                            showMessage('You have already timed in. Please time out before timing in again.', 'error');
-                            return;
-                        }
-                    } else if (status === 'Time Out') {
-                        if (lastStatus !== 'Time In') {
-                            showMessage('You must time in before you can time out.', 'error');
-                            return;
-                        }
+                    if (status === 'Time In' && lastStatus === 'Time In') {
+                        showMessage('You have already timed in. Please time out before timing in again.', 'error');
+                        return;
+                    } else if (status === 'Time Out' && lastStatus !== 'Time In') {
+                        showMessage('You must time in before you can time out.', 'error');
+                        return;
                     }
                     
                     submitBtn.disabled = true;
@@ -137,20 +145,31 @@
                             body: JSON.stringify(formData)
                         });
 
-                        if (response.ok) {
-                            const newRecord = { status: status, timestamp: new Date().toISOString() };
-                            localStorage.setItem(studentKey, JSON.stringify(newRecord));
-                            
-                            form.classList.add('hidden');
-                            showMessage(`Thank you, ${formData.name}. Your ${status} has been recorded successfully.`, 'success');
-                        } else {
-                            throw new Error('Server responded with an error.');
-                        }
+                        if (!response.ok) throw new Error('Primary webhook failed.');
+                        
+                        handleSuccessfulSubmission(formData);
+
                     } catch (error) {
-                        console.error('Submission Error:', error);
-                        showMessage('Could not submit attendance. Please try again.', 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit Attendance';
+                        console.error('Primary webhook failed:', error);
+                        console.log('Attempting backup webhook...');
+
+                        try {
+                            const backupResponse = await fetch(backupMakeWebhookUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(formData)
+                            });
+
+                            if (!backupResponse.ok) throw new Error('Backup webhook failed.');
+                            
+                            handleSuccessfulSubmission(formData);
+
+                        } catch (backupError) {
+                            console.error('Backup webhook also failed:', backupError);
+                            showMessage('Could not submit attendance. Please try again.', 'error');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit Attendance';
+                        }
                     }
                 });
             } else {
