@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url("assets/images/bg.jpg");
+            background-image: url("https://placehold.co/1920x1080/e2e8f0/e2e8f0?text=.");
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -79,16 +79,43 @@
             const submitBtn = document.getElementById('submitBtn');
             const formMessage = document.getElementById('formMessage');
 
+            const getStudentKey = () => {
+                const name = document.getElementById('name').value.trim().toLowerCase();
+                const course = document.getElementById('course').value;
+                const year = document.getElementById('yearLevel').value;
+                const section = document.getElementById('section').value;
+                if (name && course && year && section) {
+                    return `attendance_${name}_${course}_${year}_${section}`;
+                }
+                return null;
+            };
+
             if (status && (status === 'Time In' || status === 'Time Out')) {
                 statusTitle.textContent = status;
                 statusTitle.className = status === 'Time In' ? 'font-bold text-green-600' : 'font-bold text-red-600';
 
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
-                    if (makeWebhookUrl.includes("YOUR_UNIQUE_WEBHOOK_ID")) {
-                         showMessage('Webhook URL is not configured. Please contact the administrator.', 'error');
-                         return;
+
+                    const studentKey = getStudentKey();
+                    if (!studentKey) {
+                        showMessage('Please fill out all fields before submitting.', 'error');
+                        return;
+                    }
+
+                    const lastRecord = JSON.parse(localStorage.getItem(studentKey));
+                    const lastStatus = lastRecord ? lastRecord.status : null;
+
+                    if (status === 'Time In') {
+                        if (lastStatus === 'Time In') {
+                            showMessage('You have already timed in. Please time out before timing in again.', 'error');
+                            return;
+                        }
+                    } else if (status === 'Time Out') {
+                        if (lastStatus !== 'Time In') {
+                            showMessage('You must time in before you can time out.', 'error');
+                            return;
+                        }
                     }
                     
                     submitBtn.disabled = true;
@@ -96,9 +123,9 @@
 
                     const formData = {
                         name: document.getElementById('name').value.trim(),
-                        course: document.getElementById('course').value.trim(),
-                        yearLevel: document.getElementById('yearLevel').value.trim(),
-                        section: document.getElementById('section').value.trim(),
+                        course: document.getElementById('course').value,
+                        yearLevel: document.getElementById('yearLevel').value,
+                        section: document.getElementById('section').value,
                         status: status,
                         timestamp: new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'medium' })
                     };
@@ -111,6 +138,9 @@
                         });
 
                         if (response.ok) {
+                            const newRecord = { status: status, timestamp: new Date().toISOString() };
+                            localStorage.setItem(studentKey, JSON.stringify(newRecord));
+                            
                             form.classList.add('hidden');
                             showMessage(`Thank you, ${formData.name}. Your ${status} has been recorded successfully.`, 'success');
                         } else {
