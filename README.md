@@ -1,1 +1,4 @@
-# ccs-qr-attendance-
+# ccs-qr-attendance
+
+
+### Event Attendance System
