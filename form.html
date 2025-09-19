@@ -120,14 +120,6 @@
 
                     const lastRecord = JSON.parse(localStorage.getItem(studentKey));
                     const lastStatus = lastRecord ? lastRecord.status : null;
-
-                    if (status === 'Time In' && lastStatus === 'Time In') {
-                        showMessage('You have already timed in. Please time out before timing in again.', 'error');
-                        return;
-                    } else if (status === 'Time Out' && lastStatus !== 'Time In') {
-                        showMessage('You must time in before you can time out.', 'error');
-                        return;
-                    }
                     
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Submitting...';
